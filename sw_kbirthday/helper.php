@@ -40,9 +40,7 @@ class ModSWKbirthdayHelper
 		$db		= JFactory::getDBO();
 		if($integration === 'jomsocial'){
 			$query = "SELECT b.username, b.name, b.id AS userid, YEAR(a.value) AS year, 
-					MONTH(a.value) AS month,DAYOFMONTH(a.value) AS day, DAYOFYEAR(a.value) AS yday ,
-					IF(DAYOFYEAR(a.value)-DAYOFYEAR(NOW()) >= 0, DAYOFYEAR(a.value)-DAYOFYEAR(NOW()), 
-					365+(DAYOFYEAR(a.value)-DAYOFYEAR(NOW()))) AS inday
+					MONTH(a.value) AS month,DAYOFMONTH(a.value) AS day
 					FROM #__community_fields_values AS a 
 					INNER JOIN #__users AS b
 					ON a.user_id = b.id AND a.field_id = 3
@@ -52,7 +50,6 @@ class ModSWKbirthdayHelper
 			}else{
 				$query .= "{$to})";
 			}
-			$query .= " ORDER BY inday ASC, b.{$username}";
 		}elseif($integration === 'communitybuilder'){
 			if(!empty($cbfield)){
 				$cb 	= $db->getEscaped($cbfield);
@@ -61,9 +58,7 @@ class ModSWKbirthdayHelper
 				return NULL;
 			}
 			$query	= "SELECT b.username, b.name, b.id AS userid, YEAR(a.{$cb}) AS year, 
-						MONTH(a.{$cb}) AS month,DAYOFMONTH(a.{$cb}) AS day, DAYOFYEAR(a.{$cb}) AS yday ,
-						IF(DAYOFYEAR(a.{$cb})-DAYOFYEAR(NOW()) >= 0, DAYOFYEAR(a.{$cb})-DAYOFYEAR(NOW()), 
-						365+(DAYOFYEAR(a.{$cb})-DAYOFYEAR(NOW()))) AS inday 
+						MONTH(a.{$cb}) AS month,DAYOFMONTH(a.{$cb}) AS day
 						FROM #__comprofiler AS a 
 						INNER JOIN #__users AS b
 						ON a.id = b.id
@@ -73,12 +68,9 @@ class ModSWKbirthdayHelper
 			}else{
 				$query .= "{$to})";
 			}
-				$query .= " ORDER BY inday ASC, b.{$username}";
 		}else{
 			$query	= "SELECT b.username, b.name, b.id AS userid, YEAR(a.birthdate) AS year, 
-						MONTH(a.birthdate) AS month,DAYOFMONTH(a.birthdate) AS day, DAYOFYEAR(a.birthdate) AS yday ,
-						IF(DAYOFYEAR(a.birthdate)-DAYOFYEAR(NOW()) >= 0, DAYOFYEAR(a.birthdate)-DAYOFYEAR(NOW()), 
-						365+(DAYOFYEAR(a.birthdate)-DAYOFYEAR(NOW()))) AS inday 
+						MONTH(a.birthdate) AS month,DAYOFMONTH(a.birthdate) AS day
 						FROM #__kunena_users AS a 
 						INNER JOIN #__users AS b
 						ON a.userid = b.id
@@ -88,13 +80,13 @@ class ModSWKbirthdayHelper
 			}else{
 				$query .= "{$to})";
 			}
-			$query .= " ORDER BY inday ASC, b.{$username}";
 		}
 		$db->setQuery($query,0,$limit);
 		$res	= $db->loadAssocList();
 		if($db->getErrorMsg()){ 
 			KunenaError::checkDatabaseError();
-			$app->enqueueMessage ( JText::_('SW_KBIRTHDAY_NOCBFIELD_IF') , 'error' );
+			if($integration === 'communitybuilder')
+				$app->enqueueMessage ( JText::_('SW_KBIRTHDAY_NOCBFIELD_IF') , 'error' );
 		}
 		
 		if(!empty($res)){
@@ -106,7 +98,6 @@ class ModSWKbirthdayHelper
 				}else{
 					$res[$k]['birthdate'] = new JDate( mktime(0,0,0,$v['month'],$v['day'],$v['year']) );
 					$yday			= (int) $res[$k]['birthdate']->toFormat('%j');
-					//ATTENTION ONLY PARTS OF THE BIRTHDAY ARRAY ARE MANIPULATED!!!!!!!!!!!!!!!!!!
 					//we have NOT a leap year?
 					if( ($todayyear % 400) != 0 || !( ( $todayyear % 4 ) == 0 && 
 					( $todayyear % 100 ) != 0) ){
@@ -150,6 +141,7 @@ class ModSWKbirthdayHelper
 		$res = '';
 		foreach ($list as $k=>$user) {
 			if($k_config->username === 0){ $username = $user['name']; }else{ $username = $user['username']; }
+			$res[$k]['username']	= $username;
 			$con	= $params->get('connection');
 			switch ($con){
 				case 'profil': 
@@ -190,9 +182,9 @@ class ModSWKbirthdayHelper
 							$db->setQuery($query);
 							$db->query();
 							if($db->getErrorMsg()) KunenaError::checkDatabaseError();
-							$res[$k]['link'] = CKunenaLink::GetTopicPostLink('reply', $catid, $messid, $username);
+							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $catid, $messid, $username);
 						}elseif (!empty($post)){
-							$res[$k]['link'] = CKunenaLink::GetTopicPostLink('reply', $post['catid'], $post['id'], $username);
+							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $post['catid'], $post['id'], $username);
 						}
 					}else{
 						$res[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
@@ -222,6 +214,33 @@ class ModSWKbirthdayHelper
 	}
 	
 	/*
+	 * Sort the birthday list after daysin and username
+	 * @since 1.7.0
+	 * @param $list array
+	 * @return array sorted
+	 */
+	static private function bsort($list){
+		foreach ($list as $v) {
+			$temp[$v['daytill']][$v['username']]	= $v;
+		}
+		//sort after days till
+		ksort($temp);
+		//second sort after name
+		foreach ($temp as $k=>$v){
+			ksort($v);
+			$temp[$k]=$v;
+		}
+		unset($list);
+		//bring back in old array form
+		foreach ($temp as $value) {
+			foreach ($value as $v) {
+				$ttemp[]	= $v;
+			};
+		}
+		return $ttemp;
+	}
+	
+	/*
 	 * Add number of days till birthdate and language string to the Asocc list
 	 * @since 1.6.0
 	 * @param $linklist
@@ -229,10 +248,15 @@ class ModSWKbirthdayHelper
 	 * @param $year
 	 * @return asocc list
 	 */
-	static private function addDaysTill($linklist, $bd){
-		foreach ($bd as $key=>$value){		
-			$linklist[$key]['daytill'] 		= $value['inday'];
-			if(empty($linklist[$key]['daytill'])) 
+	static private function addDaysTill($linklist, $bd, $today){
+		$tyday		= $today->toFormat('%j');
+		foreach ($bd as $key=>$value){
+			$byday	= $value['birthdate']->toFormat('%j');
+			if($byday < $tyday) $linklist[$key]['daytill']= $tyday - $byday;
+			elseif ($byday > $tyday) $linklist[$key]['daytill']= $byday- $tyday;
+			else $linklist[$key]['daytill']= 0;
+			
+			if(empty($linklist[$key]['daytill']) || $linklist[$key]['daytill'] == 0) 
 				$linklist[$key]['daystring']= JText::_('SW_KBIRTHDAY_TODAY');
 			elseif($linklist[$key]['daytill'] == 1) 
 				$linklist[$key]['daystring']= JText::sprintf('SW_KBIRTHDAY_DAY', $linklist[$key]['daytill']);
@@ -242,6 +266,7 @@ class ModSWKbirthdayHelper
 			
 			
 		}
+		$linklist = self::bsort( $linklist);
 		return $linklist;
 	}
 	
@@ -290,7 +315,7 @@ class ModSWKbirthdayHelper
 		$list1 = '';
 		if(!empty($list)){
 			$list1		= self::getUserLinkList($list,$timeo, $params);
-			$list1		= self::addDaysTill($list1,$list);
+			$list1		= self::addDaysTill($list1,$list, $timeo);
 			
 			$disage		= $params->get('displayage');
 			if (!empty($disage)) $list1 = self::addUserAge($list1,$list,$timeo); 
