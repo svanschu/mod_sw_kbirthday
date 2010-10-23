@@ -27,6 +27,13 @@ Legend:
 ! -> Note
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Kunena Birthday Modul 1.7.0
+23-Oktober-2010 svens
++ [#22995] New sort function
+# [#22909] Kunena Birthday Modul 1.6.5 born in 2000
+
+
 Kunena Birthday Modul 1.6.5
 
 29-Sep-2010 Sven
