@@ -26,6 +26,8 @@ class ModSWKbirthdayHelper
 	 * @param $params
 	 */
 	function __construct($params){
+		$this->app			= JFactory::getApplication();
+		$this->k_config		= KunenaFactory::getConfig ();
 		$this->params		= $params;
 		//get the date today
 		$timefrom	= $params->get('timefrom');
@@ -59,11 +61,7 @@ class ModSWKbirthdayHelper
 	{
 		$from			= $this->timeo->toFormat('%j');
 		$to				= $this->datemaxo->toFormat('%j');
-		$app			= JFactory::getApplication();
-		$k_config		= KunenaFactory::getConfig ();
-		if($k_config->username === 0) $username = 'name';
-		else $username 	= 'username';
-		$integration	= $k_config->integration_profile;
+		$integration	= $this->k_config->integration_profile;
 		if($integration == 'auto')
 			$integration	= KunenaIntegration::detectIntegration ( 'profile' , true );
 		$db		= JFactory::getDBO();
@@ -119,7 +117,7 @@ class ModSWKbirthdayHelper
 		if($db->getErrorMsg()){ 
 			KunenaError::checkDatabaseError();
 			if($integration === 'communitybuilder')
-				$app->enqueueMessage ( JText::_('SW_KBIRTHDAY_NOCBFIELD_IF') , 'error' );
+				$this->app->enqueueMessage ( JText::_('SW_KBIRTHDAY_NOCBFIELD_IF') , 'error' );
 		}
 		
 		if(!empty($res)){
@@ -166,20 +164,20 @@ class ModSWKbirthdayHelper
 	 * @return array of names/links
 	 */
 	private function getUserLinkList($list){
-		$k_config = new CKunenaConfig();
 		$res = '';
 		foreach ($list as $k=>$user) {
-			if($k_config->username === 0){ $username = $user['name']; }else{ $username = $user['username']; }
-			$res[$k]['username']	= $username;
+			if($this->k_config->username == 0)
+				$res[$k]['username'] = $user['name'];
+			else
+				$res[$k]['username'] = $user['username'];
 			$con	= $this->params->get('connection');
 			switch ($con){
 				case 'profil': 
 					$res[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
 					break;
 				case 'forum':
-					require_once (JPATH_BASE . DS. 'components' . DS. 'com_kunena' . DS . 'lib' . DS . 'kunena.posting.class.php');
 					if((int)$user['birthdate']->toFormat('%j') === (int)$this->timeo->toFormat('%j')){
-						$subject = JText::sprintf('SW_KBIRTHDAY_SUBJECT', $username);
+						$subject = self::getSubject($res[$k]['username']);
 						$db		= JFactory::getDBO();
 						$query	= "SELECT id,catid,subject,time as year FROM #__kunena_messages WHERE subject='{$subject}'";
 						$db->setQuery($query,0,1);
@@ -191,15 +189,15 @@ class ModSWKbirthdayHelper
 							$botid		= $this->params->get('swkbotid');
 							$time		= CKunenaTimeformat::internalTime ();
 							//Insert the birthday thread into DB
-							$query	= "INSERT INTO #__kunena_messages (catid,name,userid,subject,time) 
-								VALUES({$catid},'{$botname}',{$botid},'{$subject}', {$time})";
+							$query	= "INSERT INTO #__kunena_messages (catid,name,userid,email,subject,time, ip) 
+								VALUES({$catid},'{$botname}',{$botid}, '','{$subject}', {$time}, '')";
 							$db->setQuery($query);
 							$db->query();
 							if($db->getErrorMsg()) KunenaError::checkDatabaseError();
 							//What ID get our thread?
 							$messid = (int) $db->insertID();
 							//Insert the thread message into DB
-							$message= JText::sprintf('SW_KBIRTHDAY_MESSAGE',$user['username']);
+							$message = self::getMessage($res[$k]['username']);
 							$query	= "INSERT INTO #__kunena_messages_text (mesid,message) 
 								VALUES({$messid},'{$message}')";
 							$db->setQuery($query);
@@ -211,20 +209,87 @@ class ModSWKbirthdayHelper
 							$db->setQuery($query);
 							$db->query();
 							if($db->getErrorMsg()) KunenaError::checkDatabaseError();
-							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $catid, $messid, $username);
+							// now increase the #s in categories
+							CKunenaTools::modifyCategoryStats ( $messid, 0 , $time , $catid );
+							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $catid, $messid, $res[$k]['username']);
+							$uri = JFactory::getURI();
+							if($uri->getVar('option') == 'com_kunena') {
+								$app = & JFactory::getApplication();
+								$app->redirect($uri->toString());
+							}
 						}elseif (!empty($post)){
-							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $post['catid'], $post['id'], $username);
+							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $post['catid'], $post['id'], $res[$k]['username']);
 						}
 					}else{
 						$res[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
 					}
 					break;
 				default:
-					$res[$k]['link'] = $username;
+					$res[$k]['link'] = $res[$k]['username'];
 					break;				
 			}
 		}
 		return $res;
+	}
+	
+	/*
+	 * Get the subject of/for the forum post
+	 * @since 1.7.0
+	 * @return string subject
+	 */
+	private function getSubject($username){
+		if($this->params->get('activatelanguage') == 'yes'){
+			$lang = $this->params->get('subjectlanguage');
+			if(empty($lang)){
+				$this->app->enqueueMessage ( JText::_('SW_KBIRTHDAY_LANGUAGE_NOSUBJECT') , 'error' );
+				return ;
+			}
+			$subject = self::getWantedLangString($lang, 'SW_KBIRTHDAY_SUBJECT', $username);
+		}else{
+			$subject = JText::sprintf('SW_KBIRTHDAY_SUBJECT', $username);
+		}
+		return $subject;
+	}
+	
+	private function getMessage($username){
+		if($this->params->get('activatelanguage') == 'yes'){
+			$lang = $this->params->get('messagelanguage');
+			if(empty($lang)){
+				$this->app->enqueueMessage ( JText::_('SW_KBIRTHDAY_LANGUAGE_NOMESSAGE') , 'error' );
+				return ;
+			}
+			$langa = explode(",",$lang);
+			foreach ($langa as $value) {
+				$value = trim($value);
+				$marray[] = self::getWantedLangString($value, 'SW_KBIRTHDAY_MESSAGE', $username );
+			}
+			$message = implode('\n\n',$marray);
+		}else{
+			$message= JText::sprintf('SW_KBIRTHDAY_MESSAGE',$res[$k]['username']);
+		}
+		return $message;
+	}
+	
+	/*
+	 * Get strings for multi language support
+	 * @since 1.7.0
+	 * @param $lang the needed language in ISO format xx-XX
+	 * @param $arg which argument should be trabslated
+	 * @param $username insert into translated string
+	 * @return string 
+	 */
+	private function getWantedLangString($lang, $arg, $username){
+		jimport('joomla.filesystem.file');
+		$exist = JFile::exists(JPATH_BASE.DS.'language'.DS.$lang.DS.$lang.'.mod_sw_kbirthday.ini');
+		if($exist == FALSE){
+			$this->app->enqueueMessage ( JText::sprintf('SW_KBIRTHDAY_LANGUAGE_NOTEXIST',$lang) , 'error' );
+			return ;
+		}
+		$language = &JLanguage::getInstance($lang);
+		$language->load('mod_sw_kbirthday');
+		$string = $language->_($arg);
+		$string = sprintf($string,$username);
+		return $string;
 	}
 	
 	/*
@@ -241,7 +306,7 @@ class ModSWKbirthdayHelper
 			$byday	= (int)$value['birthdate']->toFormat('%j');
 			if( $tyday > $byday) $nexty = 1;
 			else $nexty = 0;
-			$linklist[$key-1]['age'] = $tyear + $nexty - (int)$value['birthdate']->toFormat('%Y');
+			$linklist[$key]['age'] = $tyear + $nexty - (int)$value['birthdate']->toFormat('%Y');
 		}
 		return $linklist;
 	}

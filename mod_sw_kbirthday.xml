@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
 <install type="module" version="1.5.20" method="upgrade">
 	<name>Kunena Birthday Module</name>
 	<creationDate>22.07.2010</creationDate>
@@ -63,6 +64,17 @@
 		<param type="spacer" default="SW_KBIRTHDAY_CB_NOTE" />
 		<param type="text" default="cb_birthday" name="swkbcbfield" label="SW_KBIRTHDAY_CBFIELD"
 			description="SW_KBIRTHDAY_CBFIELD_DESC" />
+		<param type="spacer" name="@spacer" />
+		<param type="spacer" default="SW_KBIRTHDAY_LANGUAGE_NOTE" />
+		<param type="radio" name="activatelanguage" default="no" label="SW_KBIRTHDAY_LANGUAGE_ACTIVATE"
+			description="SW_KBIRTHDAY_LANGUAGE_ACTIVATE_DESC" >
+			<option value="no">No</option>
+			<option value="yes">Yes</option>
+		</param>
+		<param name="subjectlanguage" type="languages" client="site" default="en-GB" 
+			label="SW_KBIRTHDAY_LANGUAGE_SUBJECT" description="SW_KBIRTHDAY_LANGUAGE_SUBJECT_DESC" />
+		<param type="text" name="messagelanguage" default="en-GB" label="SW_KBIRTHDAY_LANGUAGE_MESSAGE"
+			description="SW_KBIRTHDAY_LANGUAGE_MESSAGE_DESC" />
 	</params>
 
 </install>
