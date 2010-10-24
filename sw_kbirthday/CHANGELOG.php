@@ -29,7 +29,10 @@ Legend:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kunena Birthday Modul 1.7.0
-23-Oktober-2010 svens
+24-October-2010 svens
+# [#22999] current age instead of upcoming
+
+23-October-2010 svens
 + [#22995] New sort function
 # [#22909] Kunena Birthday Modul 1.6.5 born in 2000
 
