@@ -30,8 +30,10 @@ Legend:
 
 Kunena Birthday Modul 1.7.0
 24-October-2010 svens
-# [#22999] current age instead of upcoming
-^ [#23000] clean up code
+# [#22999] fix current age instead of upcoming
+^ [#23000] change clean up code
+# [#23006] fix don't updated kunena-categories after create the bithday post
++ [#22922] add Multi language support
 
 23-October-2010 svens
 + [#22995] New sort function
