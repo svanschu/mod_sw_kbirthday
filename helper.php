@@ -207,8 +207,13 @@ class ModSWKbirthdayHelper
 	 * @return asocc list
 	 */
 	private function addUserAge($linklist, $bd, $year){
+		$tyear	= (int)$year->toFormat('%Y');
+		$tyday	= (int)$year->toFormat('%j');
 		foreach ($bd as $key=>$value){
-			$linklist[$key]['age'] = (int)$year->toFormat('%Y') - (int)$value['birthdate']->toFormat('%Y');
+			$byday	= (int)$value['birthdate']->toFormat('%j');
+			if( $tyday > $byday) $nexty = 1;
+			else $nexty = 0;
+			$linklist[$key-1]['age'] = $tyear + $nexty - (int)$value['birthdate']->toFormat('%Y');
 		}
 		return $linklist;
 	}
@@ -250,9 +255,14 @@ class ModSWKbirthdayHelper
 	 */
 	static private function addDaysTill($linklist, $bd, $today){
 		$tyday		= $today->toFormat('%j');
+		$tyear		= $today->toFormat('%Y');
+		$bonusday	= 0;
+		//We have leap year?
+		if( ($tyear % 400) == 0 || ( ( $tyear % 4 ) == 0 && ( $tyear % 100 ) != 0) )
+			$bonusday = 1;
 		foreach ($bd as $key=>$value){
 			$byday	= $value['birthdate']->toFormat('%j');
-			if($byday < $tyday) $linklist[$key]['daytill']= $tyday - $byday;
+			if($byday < $tyday) $linklist[$key]['daytill']= (365 + $bonusday - $tyday) + $byday;
 			elseif ($byday > $tyday) $linklist[$key]['daytill']= $byday- $tyday;
 			else $linklist[$key]['daytill']= 0;
 			
@@ -267,6 +277,7 @@ class ModSWKbirthdayHelper
 			
 		}
 		$linklist = self::bsort( $linklist);
+fb($linklist);
 		return $linklist;
 	}
 	
