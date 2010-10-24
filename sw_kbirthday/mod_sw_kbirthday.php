@@ -15,7 +15,8 @@ defined( '_JEXEC' ) or die();
 require_once (dirname(__FILE__).DS.'helper.php');
 
 //get the birthday list with connection links
-$res = ModSWKbirthdayHelper::getUserBirthday($params);
+$bday = new ModSWKbirthdayHelper($params);
+$res = $bday->getUserBirthday();
 
 if(empty($res)) $res = JText::_('SW_KBIRTHDAY_NOUPCOMING');
 
