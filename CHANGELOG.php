@@ -31,6 +31,7 @@ Legend:
 Kunena Birthday Modul 1.7.0
 24-October-2010 svens
 # [#22999] current age instead of upcoming
+^ [#23000] clean up code
 
 23-October-2010 svens
 + [#22995] New sort function
