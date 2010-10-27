@@ -33,12 +33,18 @@
 		<param name="limit" type="text" label="SW_KBIRTHDAY_LIMIT"
 			description="SW_KBIRTHDAY_LIMIT_DESC" default="10">
 		</param>
-		<param name="displayage" default="1"
-			description="SW_KBIRTHDAY_DISPLAY_AGE_DESC"
-			label="SW_KBIRTHDAY_DISPLAY_AGE" type="list">
-			<option value="0">SW_KBIRTHDAY_NO</option>
-			<option value="1">SW_KBIRTHDAY_YES</option>
+		<param type="radio" name="displayage" default="1" label="SW_KBIRTHDAY_DISPLAY_AGE"
+			description="SW_KBIRTHDAY_DISPLAY_AGE_DESC" >
+			<option value="0">No</option>
+			<option value="1">Yes</option>
 		</param>
+		<param type="radio" name="displaydate" default="0" label="SW_KBIRTHDAY_DISPLAY_DATE"
+			description="SW_KBIRTHDAY_DISPLAY_DATE_DESC" >
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param type="text" name="dateform" default="%d.%m.%G" label="SW_KBIRTHDAY_DATEFORMAT"
+			description="SW_KBIRTHDAY_DATEFORMAT_DESC" />
 		<param name="connection" type="list"
 			description="SW_KBIRTHDAY_CONNECTION_DESC"
 			label="SW_KBIRTHDAY_CONNECTION" default="1">

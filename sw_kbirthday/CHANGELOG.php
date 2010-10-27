@@ -29,6 +29,9 @@ Legend:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kunena Birthday Modul 1.7.0
+28-October-2010 svens
++ [#22923] add show birthdate
+
 27-October-2010 svens
 + [#23042] add kunena_bottom tmpl
 # [#23043] fix Missing name in message

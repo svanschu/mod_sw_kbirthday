@@ -32,23 +32,22 @@ class ModSWKbirthdayHelper
 		//get the date today
 		$timefrom	= $params->get('timefrom');
 		$config	= JFactory::getConfig();
-		$soffset = $config->getValue('config.offset'); 
+		$soffset = $config->getValue('config.offset');
+		$this->timeo		= new JDate(); 
 		switch ($timefrom){
 			case 'website':
-				$this->timeo	= new JDate( '', $soffset);
+				$this->timeo	= new JDate( $this->timeo->toUnix(), -$soffset);
 				break;
 			case 'user':
 				$user	=& JFactory::getUser();
 				if(!$user->guest){
 					$offset	= $user->getParam('timezone');
 					if(!empty($offset))
-						$this->timeo	= new JDate( '', $offset);
+						$this->timeo	= new JDate( $this->timeo->toUnix(), -$offset);
 					else
-						$this->timeo	= new JDate( '', $soffset);
+						$this->timeo	= new JDate( $this->timeo->toUnix(), -$soffset);
 				}
 				break;
-			default:
-				$this->timeo		= new JDate();
 		}
 		$btimeline = $params->get('nextxdays');
 		$this->datemaxo	= new JDate( ($this->timeo->toUnix() + ( $btimeline * 86400) ) );
@@ -136,15 +135,16 @@ class ModSWKbirthdayHelper
 						if( ($v['year'] % 400) == 0 || ( ( $v['year'] % 4 ) == 0 && ( $v['year'] % 100 ) != 0) ){
 							//if we haven't leap year and birthdate was in leapyear we have to cut yday after february
 							if($v['month'] >2){
-								$res[$k]['birthdate'] 	= new JDate( ( $res[$k]['birthdate']->toUnix() - 86400) );
+								/*$res[$k]['birthdate'] 	= new JDate( ( $res[$k]['birthdate']->toUnix() - 86400) );
 								$yday 					= $res[$k]['birthdate']->toFormat('%j');
 								$ytoday					= (int)$this->timeo->toFormat('%j');
 								$ytodaybt				= (int)$this->datemaxo->toFormat('%j');
 								if( ( $yday < $ytoday &&  $ytodaybt  <= 366) 
 									|| ( $yday < $ytoday &&  $ytodaybt  > 366 && ( $ytodaybt-366 ) < $yday ) ){
 										unset($res[$k]);
-								}
-							}
+								}*/
+								$res[$k]['leap'] = 1;
+							}else $res[$k]['leap'] = 0;
 							//was birthday on 29 february? then show it on 1 march
 							if($v['month'] == 2 && $v['day'] == 29){
 								$res[$k]['birthdate'] = new JDate( ($res[$k]['birthdate']->toUnix() + 86400) );
@@ -164,20 +164,20 @@ class ModSWKbirthdayHelper
 	 * @return array of names/links
 	 */
 	private function getUserLinkList($list){
-		$res = '';
+		//$list = '';
 		foreach ($list as $k=>$user) {
 			if($this->k_config->username == 0)
-				$res[$k]['username'] = $user['name'];
+				$list[$k]['username'] = $user['name'];
 			else
-				$res[$k]['username'] = $user['username'];
+				$list[$k]['username'] = $user['username'];
 			$con	= $this->params->get('connection');
 			switch ($con){
 				case 'profil': 
-					$res[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
+					$list[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
 					break;
 				case 'forum':
 					if((int)$user['birthdate']->toFormat('%j') === (int)$this->timeo->toFormat('%j')){
-						$subject = self::getSubject($res[$k]['username']);
+						$subject = self::getSubject($list[$k]['username']);
 						$db		= JFactory::getDBO();
 						$query	= "SELECT id,catid,subject,time as year FROM #__kunena_messages WHERE subject='{$subject}'";
 						$db->setQuery($query,0,1);
@@ -197,7 +197,7 @@ class ModSWKbirthdayHelper
 							//What ID get our thread?
 							$messid = (int) $db->insertID();
 							//Insert the thread message into DB
-							$message = self::getMessage($res[$k]['username']);
+							$message = self::getMessage($list[$k]['username']);
 							$query	= "INSERT INTO #__kunena_messages_text (mesid,message) 
 								VALUES({$messid},'{$message}')";
 							$db->setQuery($query);
@@ -211,25 +211,25 @@ class ModSWKbirthdayHelper
 							if($db->getErrorMsg()) KunenaError::checkDatabaseError();
 							// now increase the #s in categories
 							CKunenaTools::modifyCategoryStats ( $messid, 0 , $time , $catid );
-							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $catid, $messid, $res[$k]['username']);
+							$list[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $catid, $messid, $list[$k]['username']);
 							$uri = JFactory::getURI();
 							if($uri->getVar('option') == 'com_kunena') {
 								$app = & JFactory::getApplication();
 								$app->redirect($uri->toString());
 							}
 						}elseif (!empty($post)){
-							$res[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $post['catid'], $post['id'], $res[$k]['username']);
+							$list[$k]['link'] = CKunenaLink::GetTopicPostReplyLink('reply', $post['catid'], $post['id'], $list[$k]['username']);
 						}
 					}else{
-						$res[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
+						$list[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
 					}
 					break;
 				default:
-					$res[$k]['link'] = $res[$k]['username'];
+					$list[$k]['link'] = $list[$k]['username'];
 					break;				
 			}
 		}
-		return $res;
+		return $list;
 	}
 	
 	/*
@@ -299,14 +299,26 @@ class ModSWKbirthdayHelper
 	 * @param $bd
 	 * @return asocc list
 	 */
-	private function addUserAge($linklist, $bd){
+	private function addUserAge($linklist){
 		$tyear	= (int)$this->timeo->toFormat('%Y');
 		$tyday	= (int)$this->timeo->toFormat('%j');
-		foreach ($bd as $key=>$value){
+		foreach ($linklist as $key=>$value){
 			$byday	= (int)$value['birthdate']->toFormat('%j');
 			if( $tyday > $byday) $nexty = 1;
 			else $nexty = 0;
 			$linklist[$key]['age'] = $tyear + $nexty - (int)$value['birthdate']->toFormat('%Y');
+		}
+		return $linklist;
+	}
+	
+	/* Add date to sring
+	 * @since 1.7.0
+	 */
+	private function addDate($linklist){
+		$format		= $this->params->get('dateform');
+		foreach ($linklist as $k=>$v) {
+			$bdate	= $v['birthdate']->toFormat($format);
+			$linklist[$k]['date'] = JText::sprintf('SW_KBIRTHDAY_DATE', $bdate);
 		}
 		return $linklist;
 	}
@@ -346,17 +358,17 @@ class ModSWKbirthdayHelper
 	 * @param $bd
 	 * @return asocc list
 	 */
-	private function addDaysTill($linklist, $bd){
+	private function addDaysTill($linklist){
 		$tyday		= $this->timeo->toFormat('%j');
 		$tyear		= $this->timeo->toFormat('%Y');
 		$bonusday	= 0;
 		//We have leap year?
 		if( ($tyear % 400) == 0 || ( ( $tyear % 4 ) == 0 && ( $tyear % 100 ) != 0) )
 			$bonusday = 1;
-		foreach ($bd as $key=>$value){
+		foreach ($linklist as $key=>$value){
 			$byday	= $value['birthdate']->toFormat('%j');
-			if($byday < $tyday) $linklist[$key]['daytill']= (365 + $bonusday - $tyday) + $byday;
-			elseif ($byday > $tyday) $linklist[$key]['daytill']= $byday- $tyday;
+			if($byday < $tyday) $linklist[$key]['daytill']= (365 + $bonusday - $tyday) + $byday - $value['leap'];
+			elseif ($byday > $tyday) $linklist[$key]['daytill']= $byday- $tyday - $value['leap'];
 			else $linklist[$key]['daytill']= 0;
 			
 			if(empty($linklist[$key]['daytill']) || $linklist[$key]['daytill'] == 0) 
@@ -384,16 +396,20 @@ class ModSWKbirthdayHelper
 		$list1 = '';
 		if(!empty($list)){
 			$list1		= self::getUserLinkList($list);
-			$list1		= self::addDaysTill($list1,$list);
+			$list1		= self::addDaysTill($list1);
 			
 			$disage		= $this->params->get('displayage');
-			if (!empty($disage)) $list1 = self::addUserAge($list1,$list); 
-
+			if (!empty($disage)) $list1 = self::addUserAge($list1); 
+			
+			$disdate	= $this->params->get('displaydate');
+			if (!empty($disdate)) $list1 = self::addDate($list1);
+			
 			If(!empty($list1)){
 				foreach ($list1 as $k=>$v){
 					if (!empty($v['age']) ) $age = JText::sprintf('SW_KBIRTHDAY_ADD_AGE', $v['age']);
 					else $age='';
-					$list1[$k]['link']		= JText::sprintf('SW_KBIRTHDAY_HAVEBIRTHDAYIN', $v['link'], $v['daystring'], $age );
+					if(!$v['date']) $v['date'] = '';
+					$list1[$k]['link']		= JText::sprintf('SW_KBIRTHDAY_HAVEBIRTHDAYIN', $v['link'], $v['daystring'], $age, $v['date'] );
 				}
 			}
 		}
