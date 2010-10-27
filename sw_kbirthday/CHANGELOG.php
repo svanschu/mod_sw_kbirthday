@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * 
- * @package Kunena
+ * @package SW KBirthday Module
  *
  * @Copyright (C) 2010 Schultschik Websolution All rights reserved
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -30,7 +30,8 @@ Legend:
 
 Kunena Birthday Modul 1.7.0
 27-October-2010 svens
-+ [#23042] kunena_bottom tmpl
++ [#23042] add kunena_bottom tmpl
+# [#23043] fix Missing name in message
 
 24-October-2010 svens
 # [#22999] fix current age instead of upcoming

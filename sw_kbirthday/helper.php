@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * 
- * @package Kunena
+ * @package SW KBirthday Module
  *
  * @Copyright (C) 2010 Schultschik Websolution All rights reserved
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -265,7 +265,7 @@ class ModSWKbirthdayHelper
 			}
 			$message = implode('\n\n',$marray);
 		}else{
-			$message= JText::sprintf('SW_KBIRTHDAY_MESSAGE',$res[$k]['username']);
+			$message= JText::sprintf('SW_KBIRTHDAY_MESSAGE', $username);
 		}
 		return $message;
 	}
