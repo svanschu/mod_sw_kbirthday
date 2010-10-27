@@ -29,6 +29,9 @@ Legend:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kunena Birthday Modul 1.7.0
+27-October-2010 svens
++ [#23042] kunena_bottom tmpl
+
 24-October-2010 svens
 # [#22999] fix current age instead of upcoming
 ^ [#23000] change clean up code
