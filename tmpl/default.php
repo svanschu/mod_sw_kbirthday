@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * 
- * @package Kunena
+ * @package SW KBirthday Module
  *
  * @Copyright (C) 2010 Schultschik Websolution All rights reserved
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
