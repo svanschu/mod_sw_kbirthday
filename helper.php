@@ -143,7 +143,10 @@ class ModSWKbirthdayHelper
 									|| ( $yday < $ytoday &&  $ytodaybt  > 366 && ( $ytodaybt-366 ) < $yday ) ){
 										unset($res[$k]);
 								}*/
-								$res[$k]['leap'] = 1;
+								$yday	= $yday-1;
+								$tyday	= $this->timeo->toFormat('%j');
+								if($tyday > $yday) unset($res[$k]);
+								else $res[$k]['leap'] = 1;
 							}else $res[$k]['leap'] = 0;
 							//was birthday on 29 february? then show it on 1 march
 							if($v['month'] == 2 && $v['day'] == 29){
@@ -367,6 +370,7 @@ class ModSWKbirthdayHelper
 			$bonusday = 1;
 		foreach ($linklist as $key=>$value){
 			$byday	= $value['birthdate']->toFormat('%j');
+fb($byday.'-'.$tyday);
 			if($byday < $tyday) $linklist[$key]['daytill']= (365 + $bonusday - $tyday) + $byday - $value['leap'];
 			elseif ($byday > $tyday) $linklist[$key]['daytill']= $byday- $tyday - $value['leap'];
 			else $linklist[$key]['daytill']= 0;

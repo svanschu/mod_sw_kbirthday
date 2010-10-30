@@ -12,9 +12,10 @@
 
 defined( '_JEXEC' ) or die();
 $doc = & JFactory::getDocument();
+$uri =& JURI::getInstance();
 $style = '#Kunena div.sw_kbirthday td.kcol-first{width:1%;}
 			#Kunena .swkbicon{
-				background: url("media/mod_sw_kbirthday/img/birthday.png") no-repeat center top transparent scroll;
+				background: url("'.$uri->base().'/media/mod_sw_kbirthday/img/birthday.png") no-repeat center top transparent scroll;
 				height: 32px;
 				width: 32px;}';
 $doc->addStyleDeclaration($style);

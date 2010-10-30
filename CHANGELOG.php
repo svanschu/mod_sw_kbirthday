@@ -29,6 +29,13 @@ Legend:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kunena Birthday Modul 1.7.0
+30-Ocotber-2010 svens
+# [#23072] fix Showed birthday from yesterday when birthday was in leap year
+# [#23075] image kunena_bottom
+
+29-Ocotber-2010 svens
+^ update de-DE (thanks rich)
+
 28-October-2010 svens
 + [#22923] add show birthdate
 
