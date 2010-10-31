@@ -13,10 +13,22 @@
 defined( '_JEXEC' ) or die();
 
 require_once (dirname(__FILE__).DS.'helper.php');
-
-//get the birthday list with connection links
-$bday = new ModSWKbirthdayHelper($params);
-$res = $bday->getUserBirthday();
+// Kunena detection and version check
+$minKunenaVersion = '1.6.0';
+fb(version_compare( Kunena::version (), $minKunenaVersion, '>=' ));
+fb(Kunena::version());
+fb(class_exists('Kunena'));
+if (!class_exists ( 'Kunena' ) || !version_compare( Kunena::version (), $minKunenaVersion, '>=' )  ) {
+	// Kunena 1.6 is not installed or enabled
+	$res = JText::sprintf('SW_KBIRTHDAY_NOT_INSTALLED', $minKunenaVersion);
+}elseif (! Kunena::enabled ()) {
+	// Kunena 1.6 is not online, DO NOT use Kunena!
+	$res = JText::_('SW_KBIRTHDAY_NOT_ENABLED');
+}else{
+	//get the birthday list with connection links
+	$bday = new ModSWKbirthdayHelper($params);
+	$res = $bday->getUserBirthday();
+}
 
 if(empty($res)) $res = JText::_('SW_KBIRTHDAY_NOUPCOMING');
 

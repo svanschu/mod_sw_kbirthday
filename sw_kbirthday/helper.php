@@ -167,7 +167,6 @@ class ModSWKbirthdayHelper
 	 * @return array of names/links
 	 */
 	private function getUserLinkList($list){
-		//$list = '';
 		foreach ($list as $k=>$user) {
 			if($this->k_config->username == 0)
 				$list[$k]['username'] = $user['name'];
@@ -370,7 +369,6 @@ class ModSWKbirthdayHelper
 			$bonusday = 1;
 		foreach ($linklist as $key=>$value){
 			$byday	= $value['birthdate']->toFormat('%j');
-fb($byday.'-'.$tyday);
 			if($byday < $tyday) $linklist[$key]['daytill']= (365 + $bonusday - $tyday) + $byday - $value['leap'];
 			elseif ($byday > $tyday) $linklist[$key]['daytill']= $byday- $tyday - $value['leap'];
 			else $linklist[$key]['daytill']= 0;
