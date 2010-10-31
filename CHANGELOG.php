@@ -29,6 +29,9 @@ Legend:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Kunena Birthday Modul 1.7.0
+31-October-2010 svens
++ [#23079] Add Kunena version and enable controll
+
 30-Ocotber-2010 svens
 # [#23072] fix Showed birthday from yesterday when birthday was in leap year
 # [#23075] image kunena_bottom

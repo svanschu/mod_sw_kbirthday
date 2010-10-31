@@ -9,7 +9,6 @@
  * @link http://www.schultschik.de
  **/
 // Dont allow direct linking
-
 defined( '_JEXEC' ) or die();
 $doc = & JFactory::getDocument();
 $uri =& JURI::getInstance();
