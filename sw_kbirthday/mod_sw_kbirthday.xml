@@ -2,12 +2,12 @@
 <!-- $Id$ -->
 <install type="module" version="1.5.20" method="upgrade">
 	<name>Kunena Birthday Module</name>
-	<creationDate>22.07.2010</creationDate>
+	<creationDate>01.11.2011</creationDate>
 	<author>Schultschik Websolution</author>
 	<copyright>GNU/GPL License</copyright>    
 	<authorEmail>sven@schultschik.de</authorEmail>
 	<authorUrl>www.schultschik.de</authorUrl>
-	<version>1.6.5</version>
+	<version>1.7.0 beta3</version>
 	<description>SW_KBIRTHDAY_DESC</description>
 	<files>
 		<filename module="mod_sw_kbirthday">mod_sw_kbirthday.php</filename>
