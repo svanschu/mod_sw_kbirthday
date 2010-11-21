@@ -15,9 +15,6 @@ defined( '_JEXEC' ) or die();
 require_once (dirname(__FILE__).DS.'helper.php');
 // Kunena detection and version check
 $minKunenaVersion = '1.6.0';
-fb(version_compare( Kunena::version (), $minKunenaVersion, '>=' ));
-fb(Kunena::version());
-fb(class_exists('Kunena'));
 if (!class_exists ( 'Kunena' ) || !version_compare( Kunena::version (), $minKunenaVersion, '>=' )  ) {
 	// Kunena 1.6 is not installed or enabled
 	$res = JText::sprintf('SW_KBIRTHDAY_NOT_INSTALLED', $minKunenaVersion);
