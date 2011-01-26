@@ -21,6 +21,8 @@
 -->
 <project name="SW_KBirthday" default="dist" basedir=".">
 	<description>Ant Build File for SW_KBirthday Module</description>
+	<defaultexcludes add="**/*.project"/>
+	<defaultexcludes add="**/*.externalToolBuilders"/>
 	<condition property="project_dir" value="..">
 		<not>
 			<isset property="project_dir" />
