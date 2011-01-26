@@ -245,7 +245,8 @@ class ModSWKbirthdayHelper
 			}
 			$subject = self::getWantedLangString($lang, 'SW_KBIRTHDAY_SUBJECT', $username);
 		}else{
-			$subject = JText::sprintf('SW_KBIRTHDAY_SUBJECT', $username);
+			$def = JLanguage::getDefault();
+			$subject = self::getWantedLangString($def, 'SW_KBIRTHDAY_SUBJECT', $username);
 		}
 		return $subject;
 	}
@@ -264,7 +265,8 @@ class ModSWKbirthdayHelper
 			}
 			$message = implode('\n\n',$marray);
 		}else{
-			$message= JText::sprintf('SW_KBIRTHDAY_MESSAGE', $username);
+			$def = JLanguage::getDefault();
+			$message= self::getWantedLangString($def, 'SW_KBIRTHDAY_MESSAGE', $username );
 		}
 		return $message;
 	}

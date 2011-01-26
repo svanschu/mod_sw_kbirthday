@@ -33,6 +33,7 @@ Kunena Birthday Modul 1.7.0
 ^ [#24621] rename folder
 # [#24622] Bithday date not shown when activated
 # [#24623] Limit birthdays works wrong
+# [#24620] double posts
 
 31-October-2010 svens
 + [#23079] Add Kunena version and enable controll
