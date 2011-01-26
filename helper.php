@@ -245,7 +245,8 @@ class ModSWKbirthdayHelper
 			}
 			$subject = self::getWantedLangString($lang, 'SW_KBIRTHDAY_SUBJECT', $username);
 		}else{
-			$def = JLanguage::getDefault();
+			$ins = JLanguage::getInstance();
+			$def = $ins->getDefault();
 			$subject = self::getWantedLangString($def, 'SW_KBIRTHDAY_SUBJECT', $username);
 		}
 		return $subject;
@@ -265,7 +266,8 @@ class ModSWKbirthdayHelper
 			}
 			$message = implode('\n\n',$marray);
 		}else{
-			$def = JLanguage::getDefault();
+			$ins = JLanguage::getInstance();
+			$def = $ins->getDefault();
 			$message= self::getWantedLangString($def, 'SW_KBIRTHDAY_MESSAGE', $username );
 		}
 		return $message;
