@@ -321,6 +321,7 @@ class ModSWKbirthdayHelper
 		foreach ($linklist as $k=>$v) {
 			$bdate	= $v['birthdate']->toFormat($format);
 			$linklist[$k]['date'] = JText::sprintf('SW_KBIRTHDAY_DATE', $bdate);
+fb($k.' - '.$bdate.' - '.$linklist[$k]['date']);
 		}
 		return $linklist;
 	}
@@ -411,6 +412,7 @@ class ModSWKbirthdayHelper
 					if (!empty($v['age']) ) $age = JText::sprintf('SW_KBIRTHDAY_ADD_AGE', $v['age']);
 					else $age='';
 					if(!$v['date']) $v['date'] = '';
+fb($v['date']);
 					$list1[$k]['link']		= JText::sprintf('SW_KBIRTHDAY_HAVEBIRTHDAYIN', $v['link'], $v['daystring'], $age, $v['date'] );
 				}
 			}
