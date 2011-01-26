@@ -34,6 +34,7 @@ Kunena Birthday Modul 1.7.0
 # [#24622] Bithday date not shown when activated
 # [#24623] Limit birthdays works wrong
 # [#24620] double posts
++ [#24626] create builder
 
 31-October-2010 svens
 + [#23079] Add Kunena version and enable controll
