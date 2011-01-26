@@ -109,16 +109,13 @@ class ModSWKbirthdayHelper
 				$query .= "{$to})";
 			}
 		}
-		//get limit number for birthdays
-		$limit		= $this->params->get('limit');
-		$db->setQuery($query,0,$limit);
+		$db->setQuery($query);
 		$res	= $db->loadAssocList();
 		if($db->getErrorMsg()){ 
 			KunenaError::checkDatabaseError();
 			if($integration === 'communitybuilder')
 				$this->app->enqueueMessage ( JText::_('SW_KBIRTHDAY_NOCBFIELD_IF') , 'error' );
 		}
-		
 		if(!empty($res)){
 			//setting up the right birthdate
 			$todayyear	= (int) $this->timeo->toFormat('%Y');
@@ -321,7 +318,6 @@ class ModSWKbirthdayHelper
 		foreach ($linklist as $k=>$v) {
 			$bdate	= $v['birthdate']->toFormat($format);
 			$linklist[$k]['date'] = JText::sprintf('SW_KBIRTHDAY_DATE', $bdate);
-fb($k.' - '.$bdate.' - '.$linklist[$k]['date']);
 		}
 		return $linklist;
 	}
@@ -398,8 +394,13 @@ fb($k.' - '.$bdate.' - '.$linklist[$k]['date']);
 		
 		$list1 = '';
 		if(!empty($list)){
-			$list1		= self::getUserLinkList($list);
-			$list1		= self::addDaysTill($list1);
+			$list1		= self::addDaysTill($list);
+			//get limit number for birthdays
+			$limit		= (int) $this->params->get('limit');
+			//use limit to minimise the Array
+			$list1 = array_slice($list1, 0, $limit);
+			$list1		= self::getUserLinkList($list1);
+			
 			
 			$disage		= $this->params->get('displayage');
 			if (!empty($disage)) $list1 = self::addUserAge($list1); 
@@ -412,7 +413,6 @@ fb($k.' - '.$bdate.' - '.$linklist[$k]['date']);
 					if (!empty($v['age']) ) $age = JText::sprintf('SW_KBIRTHDAY_ADD_AGE', $v['age']);
 					else $age='';
 					if(!$v['date']) $v['date'] = '';
-fb($v['date']);
 					$list1[$k]['link']		= JText::sprintf('SW_KBIRTHDAY_HAVEBIRTHDAYIN', $v['link'], $v['daystring'], $age, $v['date'] );
 				}
 			}
