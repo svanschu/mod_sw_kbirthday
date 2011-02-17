@@ -236,6 +236,7 @@ class ModSWKbirthdayHelper
 	 * @since 1.7.0
 	 * @return string subject
 	 */
+	// TODO Made one function out of getSubjaect & getMessage
 	private function getSubject($username){
 		if($this->params->get('activatelanguage') == 'yes'){
 			$lang = $this->params->get('subjectlanguage');
@@ -245,9 +246,8 @@ class ModSWKbirthdayHelper
 			}
 			$subject = self::getWantedLangString($lang, 'SW_KBIRTHDAY_SUBJECT', $username);
 		}else{
-			$ins = JLanguage::getInstance();
-			$def = $ins->getDefault();
-			$subject = self::getWantedLangString($def, 'SW_KBIRTHDAY_SUBJECT', $username);
+			$conf = JFactory::getConfig();
+			$subject = self::getWantedLangString($conf->getValue( 'config.language'), 'SW_KBIRTHDAY_SUBJECT', $username);
 		}
 		return $subject;
 	}
@@ -266,9 +266,8 @@ class ModSWKbirthdayHelper
 			}
 			$message = implode('\n\n',$marray);
 		}else{
-			$ins = JLanguage::getInstance();
-			$def = $ins->getDefault();
-			$message= self::getWantedLangString($def, 'SW_KBIRTHDAY_MESSAGE', $username );
+			$conf = JFactory::getConfig();
+			$message= self::getWantedLangString($conf->getValue( 'config.language'), 'SW_KBIRTHDAY_MESSAGE', $username );
 		}
 		return $message;
 	}
@@ -416,7 +415,7 @@ class ModSWKbirthdayHelper
 				foreach ($list1 as $k=>$v){
 					if (!empty($v['age']) ) $age = JText::sprintf('SW_KBIRTHDAY_ADD_AGE', $v['age']);
 					else $age='';
-					if(!$v['date']) $v['date'] = '';
+					if( !isset($v['date']) ) $v['date'] = '';
 					$list1[$k]['link']		= JText::sprintf('SW_KBIRTHDAY_HAVEBIRTHDAYIN', $v['link'], $v['daystring'], $age, $v['date'] );
 				}
 			}
