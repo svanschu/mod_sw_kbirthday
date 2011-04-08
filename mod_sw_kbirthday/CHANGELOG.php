@@ -27,6 +27,10 @@ Legend:
 ! -> Note
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Kunena Birthday Modul 1.7.2
+08-April-2011
+[#25587] no thread when leap year birthday
+
 Kunena Birthday Modul 1.7.1
 17-February-2011
 # [#24962] Missing argument

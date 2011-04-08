@@ -27,7 +27,7 @@
 	<params>
 		<param name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX" />
 		<param name="tmpl" type="filelist" default="default" label="SW_KBIRTHDAY_TEMPLATE"
-			description="SW_KBIRTHDAY_TEMPLATE_DESC" directory="modules/mod_sw_kbirthday/tmpl/" 
+			description="SW_KBIRTHDAY_TEMPLATE_DESC" directory="modules/mod_sw_kbirthday/tmpl" 
 			filter="\.php" stripext="TRUE" hide_default="TRUE" hide_none="TRUE" />
 		<param name="nextxdays" type="text" default="10" description="SW_KBIRTHDAY_NEXTXDAYS_DESC" 
 			label="SW_KBIRTHDAY_NEXTXDAYS" />
