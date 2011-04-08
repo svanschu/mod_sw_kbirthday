@@ -58,8 +58,8 @@ class ModSWKbirthdayHelper
 	 */
 	private function getBirthdayUser()
 	{
-		$from			= $this->timeo->toFormat('%j');
-		$to				= $this->datemaxo->toFormat('%j');
+		$from			= $this->timeo->format('z');
+		$to				= $this->datemaxo->format('z');
 		$integration	= $this->k_config->integration_profile;
 		if($integration == 'auto')
 			$integration	= KunenaIntegration::detectIntegration ( 'profile' , true );
@@ -118,22 +118,22 @@ class ModSWKbirthdayHelper
 		}
 		if(!empty($res)){
 			//setting up the right birthdate
-			$todayyear	= $this->timeo->toFormat('%Y');
+			$todayyear	= $this->timeo->format('Y');
 			foreach ($res as $k=>$v){
 				if($v['year'] == 1 || empty($v['year'])){
 					unset($res[$k]);
 				}else{
 					$res[$k]['birthdate'] = new JDate( mktime(0,0,0,$v['month'],$v['day'],$v['year']) );
-					$res[$k]['leapcorrection'] = $res[$k]['birthdate']->toFormat('%j');
-					$useryear = $res[$k]['birthdate']->toFormat('%Y');			
+					$res[$k]['leapcorrection'] = $res[$k]['birthdate']->format('z');
+					$useryear = $res[$k]['birthdate']->format('Y');			
 					//we have NOT a leap year?
 					if( ($todayyear % 400) != 0 || !( ( $todayyear % 4 ) == 0 && ( $todayyear % 100 ) != 0) ){
 						//was the birthdate in a leap year?
 						if( ($useryear % 400) == 0 || ( ( $useryear % 4 ) == 0 && ( $useryear % 100 ) != 0) ){
 							//if we haven't leap year and birthdate was in leapyear we have to cut yday after february
-							if($res[$k]['birthdate']->toFormat('%m') > 2){
+							if($res[$k]['birthdate']->format('m') > 2){
 								$res[$k]['leapcorrection'] -= 1;
-								if( $this->timeo->toFormat('%j') > $res[$k]['leapcorrection'] ) unset($res[$k]);
+								if( $this->timeo->format('z') > $res[$k]['leapcorrection'] ) unset($res[$k]);
 							}
 							//was birthday on 29 february? then show it on 1 march
 							if($v['month'] == 2 && $v['day'] == 29){
@@ -144,7 +144,7 @@ class ModSWKbirthdayHelper
 						//Is the birthday not in a leap year?
 						if( ($useryear % 400) != 0 || !( ( $useryear % 4 ) == 0 && ( $useryear % 100 ) != 0) ){
 							//if we have leap year and birthday was not, need to increment birthdays after february
-							if($res[$k]['birthdate']->toFormat('%m') > 2){
+							if($res[$k]['birthdate']->format('m') > 2){
 								$res[$k]['leapcorrection'] += 1;
 							}
 						}
@@ -172,7 +172,7 @@ class ModSWKbirthdayHelper
 					$list[$k]['link'] = CKunenaLink::GetProfileLink($user['userid']);
 					break;
 				case 'forum':
-					if( $user['leapcorrection'] == $this->timeo->toFormat('%j')){
+					if( $user['leapcorrection'] == $this->timeo->format('z')){
 						$subject = self::getSubject($list[$k]['username']);
 						$db		= JFactory::getDBO();
 						$query	= "SELECT id,catid,subject,time as year FROM #__kunena_messages WHERE subject='{$subject}'";
@@ -182,7 +182,7 @@ class ModSWKbirthdayHelper
 						$catid		= $this->params->get('bcatid');
 						$postyear = new JDate($post['year']);
 						if( empty($post) && !empty($catid) || 
-						!empty($post) && !empty($catid) && $postyear->toFormat('%Y') < $this->timeo->toFormat('%Y') ){
+						!empty($post) && !empty($catid) && $postyear->format('Y') < $this->timeo->format('Y') ){
 
 							$botname	= $this->params->get('swkbbotname', JText::_('SW_KBIRTHDAY_FORUMPOST_BOTNAME_DEF'));
 							$botid		= $this->params->get('swkbotid');
@@ -302,13 +302,13 @@ class ModSWKbirthdayHelper
 	 * @return asocc list
 	 */
 	private function addUserAge($linklist){
-		$tyear	= (int)$this->timeo->toFormat('%Y');
-		$tyday	= (int)$this->timeo->toFormat('%j');
+		$tyear	= (int)$this->timeo->format('Y');
+		$tyday	= (int)$this->timeo->format('z');
 		foreach ($linklist as $key=>$value){
-			$byday	= (int)$value['birthdate']->toFormat('%j');
+			$byday	= (int)$value['birthdate']->format('z');
 			if( $tyday > $byday) $nexty = 1;
 			else $nexty = 0;
-			$linklist[$key]['age'] = $tyear + $nexty - (int)$value['birthdate']->toFormat('%Y');
+			$linklist[$key]['age'] = $tyear + $nexty - (int)$value['birthdate']->format('Y');
 		}
 		return $linklist;
 	}
@@ -319,7 +319,7 @@ class ModSWKbirthdayHelper
 	private function addDate($linklist){
 		$format		= $this->params->get('dateform');
 		foreach ($linklist as $k=>$v) {
-			$bdate	= $v['birthdate']->toFormat($format);
+			$bdate	= $v['birthdate']->format($format);
 			$linklist[$k]['date'] = JText::sprintf('SW_KBIRTHDAY_DATE', $bdate);
 		}
 		return $linklist;
@@ -361,14 +361,14 @@ class ModSWKbirthdayHelper
 	 * @return asocc list
 	 */
 	private function addDaysTill($linklist){
-		$tyday		= $this->timeo->toFormat('%j');
-		$tyear		= $this->timeo->toFormat('%Y');
+		$tyday		= $this->timeo->format('z');
+		$tyear		= $this->timeo->format('Y');
 		$bonusday	= 0;
 		//We have leap year?
 		if( ($tyear % 400) == 0 || ( ( $tyear % 4 ) == 0 && ( $tyear % 100 ) != 0) )
 			$bonusday = 1;			
 		foreach ($linklist as $key=>$value){
-			$byday	= $value['birthdate']->toFormat('%j');
+			$byday	= $value['birthdate']->format('z');
 			if($byday < $tyday) $linklist[$key]['daytill']= (365 + $bonusday - $tyday) + $byday;
 			elseif ($byday > $tyday) $linklist[$key]['daytill']= $value['leapcorrection'] - $tyday;
 			else $linklist[$key]['daytill']= 0;
