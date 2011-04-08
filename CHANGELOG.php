@@ -27,9 +27,17 @@ Legend:
 ! -> Note
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Kunena Birthday Modul 1.7.2
+08-April-2011
+[#25587] no thread when leap year birthday
+
+Kunena Birthday Modul 1.7.1
+17-February-2011
+# [#24962] Missing argument
+# [#24961] undefined index date
 
 Kunena Birthday Modul 1.7.0
-26-January-2010 svens
+26-January-2011 svens
 ^ [#24621] rename folder
 # [#24622] Bithday date not shown when activated
 # [#24623] Limit birthdays works wrong
