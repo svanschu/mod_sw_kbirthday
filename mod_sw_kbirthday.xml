@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<!-- $Id$ -->
 <extension type="module" version="1.6.0" client="site" method="upgrade">
-	<name>MOD_SW_KBIRTHDAY</name>
+	<name>mod_sw_kbirthday</name>
 	<creationDate>@swversiondate@</creationDate>
 	<build>@swversionbuild@</build>
 	<author>Schultschik Websolution</author>
 	<copyright>GNU/GPL License</copyright>
 	<authorEmail>sven@schultschik.de</authorEmail>
 	<authorUrl>www.schultschik.de</authorUrl>
-	<version>1.7.1</version>
+	<version>1.7.2</version>
 	<description>SW_KBIRTHDAY_DESC</description>
 	<files>
 		<filename module="mod_sw_kbirthday">mod_sw_kbirthday.php</filename>
@@ -20,8 +20,9 @@
 	<media destination="mod_sw_kbirthday">
 		<filename>img/birthday.png</filename>
 	</media>
-	<languages folder="languages">
+	<languages folder="language">
 		<language tag="en-GB">en-GB/en-GB.mod_sw_kbirthday.ini</language>
+		<language tag="en-GB">en-GB/en-GB.mod_sw_kbirthday.sys.ini</language>
 		<language tag="de-DE">de-DE/de-DE.mod_sw_kbirthday.ini</language>
 	</languages>
 	<config>
