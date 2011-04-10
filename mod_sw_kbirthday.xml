@@ -8,7 +8,7 @@
 	<copyright>GNU/GPL License</copyright>
 	<authorEmail>sven@schultschik.de</authorEmail>
 	<authorUrl>www.schultschik.de</authorUrl>
-	<version>1.7.2</version>
+	<version>1.7.2.J1.6_beta</version>
 	<description>SW_KBIRTHDAY_DESC</description>
 	<files>
 		<filename module="mod_sw_kbirthday">mod_sw_kbirthday.php</filename>
@@ -24,6 +24,7 @@
 		<language tag="en-GB">en-GB/en-GB.mod_sw_kbirthday.ini</language>
 		<language tag="en-GB">en-GB/en-GB.mod_sw_kbirthday.sys.ini</language>
 		<language tag="de-DE">de-DE/de-DE.mod_sw_kbirthday.ini</language>
+		<language tag="de-DE">de-DE/de-DE.mod_sw_kbirthday.sys.ini</language>
 	</languages>
 	<config>
 		<fields name="params">
@@ -96,4 +97,8 @@
 			</fieldset>
 		</fields>
 	</config>
+	<updateservers>
+		<!-- Note: No spaces or linebreaks allowed between the server tags -->
+		<server type="extension" priority="1" name="Schultschik Websolution Update Site"><![CDATA[http://update.schultschik.de/mod_sw_kbirthday/mod_sw_kbirthday_update.xml]]></server>
+	</updateservers>
 </extension>

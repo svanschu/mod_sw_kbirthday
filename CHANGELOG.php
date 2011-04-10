@@ -30,14 +30,15 @@ Legend:
 Kunena Birthday Modul 1.7.2
 
 09-April-2011
-+ [#25590] de-DE sys.ini
-# [#25598] no loading of sys.ini on installation 
++ [#25590] de-DE sys.ini J1.6
+# [#25598] no loading of sys.ini on installation J1.6
++ [#25599] Adding update Server J1.6 
 
 08-April-2011
 # [#25587] no thread when leap year birthday
 ^ [#25590] changed xml file to be J1.6 native
-^ [#25590] date->toFormat() to date->format()
-+ [#25590] sys.ini
+^ [#25590] date->toFormat() to date->format() J1.6
++ [#25590] sys.ini J1.6
 
 Kunena Birthday Modul 1.7.1
 17-February-2011
