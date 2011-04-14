@@ -28,6 +28,8 @@ Legend:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Kunena Birthday Modul 1.7.2
+14-April-2011
+# [#25646] wrong default date format J1.6
 
 09-April-2011
 + [#25590] de-DE sys.ini J1.6

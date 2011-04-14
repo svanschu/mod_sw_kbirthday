@@ -50,7 +50,7 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
-				<field type="text" name="dateform" default="%d.%m.%G"
+				<field type="text" name="dateform" default="d.m.Y"
 					label="SW_KBIRTHDAY_DATEFORMAT" description="SW_KBIRTHDAY_DATEFORMAT_DESC" />
 				<field name="connection" type="list"
 					description="SW_KBIRTHDAY_CONNECTION_DESC SW_KBIRTHDAY_CONNECTION_NOTE"
