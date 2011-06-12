@@ -49,8 +49,8 @@ class ModSWKbirthdayHelper
 				}
 				break;
 		}
-		$btimeline = $params->get('nextxdays');
-		$this->datemaxo	= new JDate( ($this->timeo->toUnix() + ( $btimeline * 86400) ) );
+		$this->btimeline = $params->get('nextxdays');
+		$this->datemaxo	= new JDate( ($this->timeo->toUnix() + ( $this->btimeline * 86400) ) );
 	}
 	/*
 	 * @since 1.6.0
@@ -66,50 +66,60 @@ class ModSWKbirthdayHelper
 		$db		= JFactory::getDBO();
 		if($integration === 'jomsocial'){
 			$query = "SELECT b.username, b.name, b.id AS userid, YEAR(a.value) AS year, 
-					MONTH(a.value) AS month,DAYOFMONTH(a.value) AS day
+					MONTH(a.value) AS month,DAYOFMONTH(a.value) AS day,
+						(YEAR(CURDATE()) - YEAR(a.value)) AS age,
+						DATEDIFF(DATE(a.value) +
+						    INTERVAL(YEAR(CURDATE()) - YEAR(a.value) + (RIGHT(CURDATE(),5)>RIGHT(DATE(a.value),5)))
+						    YEAR, CURDATE()) AS till
 					FROM #__community_fields_values AS a 
 					INNER JOIN #__users AS b
 					ON a.user_id = b.id AND a.field_id = 3
 					WHERE ( DAYOFYEAR(a.value)>={$from} AND DAYOFYEAR(a.value)<=";
-			if($from>$to){
+			if($from>$to || $this->btimeline >= 365){
 				$query .= "366) OR ( DAYOFYEAR(a.value)>=0 AND DAYOFYEAR(a.value)<={$to})";
 			}else{
 				$query .= "{$to})";
 			}
 		}elseif($integration === 'communitybuilder'){
 			//get the list of user birthdays
-			$cbfield	= $this->params->get('swkbcbfield');
-			if(!empty($cbfield)){
-				$cb 	= $db->getEscaped($cbfield);
-			}else{
-				JError::raiseWarning('', JText::_('SW_KBIRTHDAY_NOCBFIELD'));
-				return NULL;
-			}
+			$cbfield	= $this->params->get('swkbcbfield', 'cb_birthday');
+			$cb 	= $db->getEscaped($cbfield);
 			$query	= "SELECT b.username, b.name, b.id AS userid, YEAR(a.{$cb}) AS year, 
-						MONTH(a.{$cb}) AS month,DAYOFMONTH(a.{$cb}) AS day
+						MONTH(a.{$cb}) AS month,DAYOFMONTH(a.{$cb}) AS day,
+						(YEAR(CURDATE()) - YEAR(a.{$cb})) AS age,
+						DATEDIFF(a.{$cb} +
+						    INTERVAL(YEAR(CURDATE()) - YEAR(a.{$cb}) + (RIGHT(CURDATE(),5)>RIGHT(a.{$cb},5)))
+						    YEAR, CURDATE()) AS till
 						FROM #__comprofiler AS a 
 						INNER JOIN #__users AS b
 						ON a.id = b.id
 						WHERE (DAYOFYEAR(a.{$cb})>={$from} AND DAYOFYEAR(a.{$cb})<=";
-			if($from>$to){
+			if($from>$to || $this->btimeline >= 365){
 				$query .= "366) OR (DAYOFYEAR(a.{$cb})>=0 AND DAYOFYEAR(a.{$cb})<={$to})";
 			}else{
 				$query .= "{$to})";
 			}
 		}else{
 			$query	= "SELECT b.username, b.name, b.id AS userid, YEAR(a.birthdate) AS year, 
-						MONTH(a.birthdate) AS month,DAYOFMONTH(a.birthdate) AS day
+						MONTH(a.birthdate) AS month,DAYOFMONTH(a.birthdate) AS day,
+						(YEAR(CURDATE()) - YEAR(a.birthdate)) AS age,
+						DATEDIFF(a.birthdate +
+						    INTERVAL(YEAR(CURDATE()) - YEAR(a.birthdate) + (RIGHT(CURDATE(),5)>RIGHT(a.birthdate,5)))
+						    YEAR, CURDATE()) AS till
 						FROM #__kunena_users AS a 
 						INNER JOIN #__users AS b
 						ON a.userid = b.id
 						WHERE (DAYOFYEAR(a.birthdate)>={$from} AND DAYOFYEAR(a.birthdate)<=";
-			if($from>$to){
+			if($from>$to || $this->btimeline >= 365){
 				$query .= "366) OR (DAYOFYEAR(a.birthdate)>=0 AND DAYOFYEAR(a.birthdate)<={$to})";
 			}else{
 				$query .= "{$to})";
 			}
 		}
-		$db->setQuery($query);
+        $query .= " ORDER BY till ";
+        //TODO insert limit into set Query
+		$db->setQuery($query, 0, $this->params->get('limit') );
+        
 		$res	= $db->loadAssocList();
 		if($db->getErrorMsg()){ 
 			KunenaError::checkDatabaseError();
@@ -396,10 +406,7 @@ class ModSWKbirthdayHelper
 		$list1 = '';
 		if(!empty($list)){
 			$list1		= self::addDaysTill($list);
-			//get limit number for birthdays
-			$limit		= (int) $this->params->get('limit');
-			//use limit to minimise the Array
-			$list1 = array_slice($list1, 0, $limit);
+			
 			$list1		= self::getUserLinkList($list1);
 			
 			
