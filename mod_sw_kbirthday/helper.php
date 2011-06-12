@@ -27,7 +27,9 @@ class ModSWKbirthdayHelper
 	 */
 	function __construct($params){
 		$this->app			= JFactory::getApplication();
-		$this->k_config		= KunenaFactory::getConfig ();
+		$k_config		    = KunenaFactory::getConfig ();
+        $this->integration  = $k_config->integration_profile;
+        $this->username     = $k_config->username;
 		$this->params		= $params;
 		//get the date today
 		$timefrom	= $params->get('timefrom');
@@ -60,11 +62,14 @@ class ModSWKbirthdayHelper
 	{
 		$from			= $this->timeo->toFormat('%j');
 		$to				= $this->datemaxo->toFormat('%j');
-		$integration	= $this->k_config->integration_profile;
-		if($integration == 'auto')
-			$integration	= KunenaIntegration::detectIntegration ( 'profile' , true );
+		if($this->integration == 'auto')
+			$this->integration	= KunenaIntegration::detectIntegration ( 'profile' , true );
+        if($this->username == 0)
+            $order = 'name';
+        else
+            $order = 'username';
 		$db		= JFactory::getDBO();
-		if($integration === 'jomsocial'){
+		if($this->integration === 'jomsocial'){
 			$query = "SELECT b.username, b.name, b.id AS userid, YEAR(a.value) AS year, 
 					MONTH(a.value) AS month,DAYOFMONTH(a.value) AS day,
 						(YEAR(CURDATE()) - YEAR(a.value)) AS age,
@@ -80,7 +85,7 @@ class ModSWKbirthdayHelper
 			}else{
 				$query .= "{$to})";
 			}
-		}elseif($integration === 'communitybuilder'){
+		}elseif($this->integration === 'communitybuilder'){
 			//get the list of user birthdays
 			$cbfield	= $this->params->get('swkbcbfield', 'cb_birthday');
 			$cb 	= $db->getEscaped($cbfield);
@@ -116,14 +121,12 @@ class ModSWKbirthdayHelper
 				$query .= "{$to})";
 			}
 		}
-        $query .= " ORDER BY till ";
-        //TODO insert limit into set Query
+        $query .= " ORDER BY till,".$db->getEscaped($order);
 		$db->setQuery($query, 0, $this->params->get('limit') );
-        
 		$res	= $db->loadAssocList();
 		if($db->getErrorMsg()){ 
 			KunenaError::checkDatabaseError();
-			if($integration === 'communitybuilder')
+			if($this->integration === 'communitybuilder')
 				$this->app->enqueueMessage ( JText::_('SW_KBIRTHDAY_NOCBFIELD_IF') , 'error' );
 		}
 		if(!empty($res)){
@@ -172,7 +175,7 @@ class ModSWKbirthdayHelper
 	 */
 	private function getUserLinkList($list){
 		foreach ($list as $k=>$user) {
-			if($this->k_config->username == 0)
+			if($this->username == 0)
 				$list[$k]['username'] = $user['name'];
 			else
 				$list[$k]['username'] = $user['username'];
@@ -391,7 +394,6 @@ class ModSWKbirthdayHelper
 				$linklist[$key]['daystring']= JText::sprintf('SW_KBIRTHDAY_DAYS', $linklist[$key]['daytill']);
 			
 		}
-		$linklist = self::bsort( $linklist);
 		return $linklist;
 	}
 	
