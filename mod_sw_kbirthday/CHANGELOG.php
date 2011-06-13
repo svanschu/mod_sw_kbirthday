@@ -27,6 +27,19 @@ Legend:
 ! -> Note
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Kunena Birthday Modul 1.7.3-Dev
+13-June-2011
+^ optimize sql query
+^ moved limit back into setQuery()
+- bsort() - now made with sql
+^ addDaysTill() to use new till time and eliminate a foreach
+- getUserLinkList()
++ getUserLink()
+- addUserAge() - now made with sql
+^ addDate() - eliminate foreach
+^ getUserBirthday() - moved modified functions into foreach
+
+
 Kunena Birthday Modul 1.7.2
 08-April-2011
 [#25587] no thread when leap year birthday
