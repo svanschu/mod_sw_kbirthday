@@ -73,7 +73,7 @@ class ModSWKbirthdayHelper
             $order = 'username';
 		$db		= JFactory::getDBO();
 		if($this->integration === 'jomsocial'){
-			$query = "SELECT b.id AS userid, YEAR(a.value) AS year,
+			$query = "SELECT b.username, b.name, b.id AS userid, YEAR(a.value) AS year,
 					MONTH(a.value) AS month,DAYOFMONTH(a.value) AS day,
 						DATEDIFF(DATE(a.value) +
 						    INTERVAL(YEAR(CURDATE()) - YEAR(a.value) + (RIGHT(CURDATE(),5)>RIGHT(DATE(a.value),5)))
@@ -93,7 +93,7 @@ class ModSWKbirthdayHelper
 			//get the list of user birthdays
 			$cbfield	= $this->params->get('swkbcbfield', 'cb_birthday');
 			$cb 	= $db->getEscaped($cbfield);
-			$query	= "SELECT b.id AS userid, YEAR(a.{$cb}) AS year,
+			$query	= "SELECT b.username, b.name, b.id AS userid, YEAR(a.{$cb}) AS year,
 						MONTH(a.{$cb}) AS month,DAYOFMONTH(a.{$cb}) AS day,
 						DATEDIFF(a.{$cb} +
 						    INTERVAL(YEAR(CURDATE()) - YEAR(a.{$cb}) + (RIGHT(CURDATE(),5)>RIGHT(a.{$cb},5)))
@@ -110,7 +110,7 @@ class ModSWKbirthdayHelper
 				$query .= "{$to})";
 			}
 		}else{
-			$query	= "SELECT b.id AS userid, YEAR(a.birthdate) AS year,
+			$query	= "SELECT b.username, b.name, b.id AS userid, YEAR(a.birthdate) AS year,
 						MONTH(a.birthdate) AS month,DAYOFMONTH(a.birthdate) AS day,
 						DATEDIFF(a.birthdate +
 						    INTERVAL(YEAR(CURDATE()) - YEAR(a.birthdate) + (RIGHT(CURDATE(),5)>RIGHT(a.birthdate,5)))
