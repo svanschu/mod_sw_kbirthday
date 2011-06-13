@@ -245,10 +245,10 @@ class ModSWKbirthdayHelper
 	
 	/**
 	 * Get the subject of the forum post
-	 * @since 1.7.0
+     * @param $username
+	 * @since 1.7
 	 * @return string subject
 	 */
-	// TODO Made one function out of getSubjaect & getMessage
 	private function getSubject($username){
 		if($this->params->get('activatelanguage') == 'yes'){
 			$lang = $this->params->get('subjectlanguage');
@@ -263,7 +263,13 @@ class ModSWKbirthdayHelper
 		}
 		return $subject;
 	}
-	
+
+    /**
+     * Get the message of the forum post
+     * @param  $username
+     * @return string message
+     * @since 1.7
+     */
 	private function getMessage($username){
 		if($this->params->get('activatelanguage') == 'yes'){
 			$lang = $this->params->get('messagelanguage');
@@ -353,9 +359,9 @@ class ModSWKbirthdayHelper
                     self::addDate($v);
 			    else
                     $v['date'] = '';
-				$list1[$k]['link'] = JText::sprintf('SW_KBIRTHDAY_HAVEBIRTHDAYIN', $v['link'], $v['day_string'], $v['age'], $v['date'] );
+				$list[$k]['link'] = JText::sprintf('SW_KBIRTHDAY_HAVEBIRTHDAYIN', $v['link'], $v['day_string'], $v['age'], $v['date'] );
 			}
 		}
-		return $list1;
+		return $list;
 	}
 }
