@@ -24,7 +24,7 @@
     <property name="builddir" value="./../../packages/${src.name}" override="true" />
     <!-- Declare Project src files -->
     <property name="src" value="./.." override="true" />
-    <property name="module" value="${src}" />
+    <property name="module" value="${src}/mod_sw_kbirthday" />
     <property name="src.name" value="" override="true" />
 
     <fileset dir="${module}" id="module">
@@ -33,7 +33,7 @@
 
     <target name="build" depends="prepare, copy">
         <zip destfile="${builddir}/${src.name}_${build.version}_b${build.number}_${build.date.DSTAMP}.zip">
-            <fileset dir="${builddir}/tmp">
+            <fileset dir="${builddir}/tmp/module">
                 <include name="**" />
             </fileset>
         </zip>

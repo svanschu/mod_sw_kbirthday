@@ -27,7 +27,10 @@ Legend:
 ! -> Note
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Kunena Birthday Modul 1.7.3-Dev
+Kunena Birthday Modul 1.7.3
+
+29-Juli-2011
+# fixed builder
 
 28-Juli-2011
 + added es-ES, fr-FR, hu-HU, it-IT, nl-NL, pl-PL, pt-BR, ru-RU, sr-RS, sr-YU
