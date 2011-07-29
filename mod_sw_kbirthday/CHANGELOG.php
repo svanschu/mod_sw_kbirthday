@@ -30,6 +30,7 @@ Legend:
 Kunena Birthday Modul 1.7.3
 
 29-Juli-2011
++ added the languages to install xml
 # fixed builder
 
 28-Juli-2011
