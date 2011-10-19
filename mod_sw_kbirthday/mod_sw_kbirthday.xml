@@ -20,7 +20,7 @@
 	<media destination="mod_sw_kbirthday">
 		<filename>img/birthday.png</filename>
 	</media>
-	<languages folder="languages">
+	<languages folder="language">
 		<language tag="de-DE">de-DE/de-DE.mod_sw_kbirthday.ini</language>
 		<language tag="en-GB">en-GB/en-GB.mod_sw_kbirthday.ini</language>
         <language tag="es-ES">es-ES/es-ES.mod_sw_kbirthday.ini</language>
