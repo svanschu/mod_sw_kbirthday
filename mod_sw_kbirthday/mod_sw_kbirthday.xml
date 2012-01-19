@@ -20,14 +20,15 @@
 		<filename>img/birthday.png</filename>
 	</media>
 	<languages folder="language">
+		<language tag="da-DK">da-DK/da-DK.mod_sw_kbirthday.ini</language>
 		<language tag="de-DE">de-DE/de-DE.mod_sw_kbirthday.ini</language>
 		<language tag="en-GB">en-GB/en-GB.mod_sw_kbirthday.ini</language>
         <language tag="es-ES">es-ES/es-ES.mod_sw_kbirthday.ini</language>
-        <language tag="fr-FR">fr-FR/fr-FR.mod_sw_kbirthday.ini</language>
+        <!--language tag="fr-FR">fr-FR/fr-FR.mod_sw_kbirthday.ini</language-->
         <language tag="nl-NL">nl-NL/nl-NL.mod_sw_kbirthday.ini</language>
         <language tag="pl-PL">pl-PL/pl-PL.mod_sw_kbirthday.ini</language>
         <language tag="pt-BR">pt-BR/pt-BR.mod_sw_kbirthday.ini</language>
-        <language tag="sr-RS">sr-RS/sr-RS.mod_sw_kbirthday.ini</language>
+        <!--language tag="sr-RS">sr-RS/sr-RS.mod_sw_kbirthday.ini</language-->
 	</languages>
 	<params>
 		<param name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX" />
