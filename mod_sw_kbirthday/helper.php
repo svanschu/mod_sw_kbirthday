@@ -188,8 +188,8 @@ class ModSWKbirthdayHelper
 				break;
 			case 'forum':
 				if ($user['leapcorrection'] == $this->timeo->toFormat('%j')) {
-					$subject = self::getSubject($username);
 					$db		= JFactory::getDBO();
+					$subject = $db->getEscaped( self::getSubject($username) );
 					$query	= "SELECT id,catid,subject,time as year FROM #__kunena_messages WHERE subject='{$subject}'";
 					$db->setQuery($query,0,1);
 					$post	= $db->loadAssoc();
@@ -210,7 +210,7 @@ class ModSWKbirthdayHelper
 						//What ID get our thread?
 						$messid = (int) $db->insertID();
 						//Insert the thread message into DB
-						$message = self::getMessage($username);
+						$message = $db->getEscaped( self::getMessage($username) );
 						$query	= "INSERT INTO #__kunena_messages_text (mesid,message)
 							VALUES({$messid},'{$message}')";
 						$db->setQuery($query);
