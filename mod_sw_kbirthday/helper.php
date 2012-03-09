@@ -36,7 +36,7 @@ class ModSWKbirthdayHelper
 		$timefrom	= $params->get('timefrom');
 		$config	= JFactory::getConfig();
 		$soffset = $config->getValue('config.offset');
-		$this->timeo		= new JDate(); 
+		$this->timeo		= new JDate();
 		switch ($timefrom){
 			case 'website':
 				$this->timeo	= new JDate( $this->timeo->toUnix(), -$soffset);
@@ -146,7 +146,7 @@ class ModSWKbirthdayHelper
 					$res[$k]['leapcorrection'] = $res[$k]['birthdate']->toFormat('%j');
 					$useryear = $res[$k]['birthdate']->toFormat('%Y');			
 					//we have NOT a leap year?
-					if( ($todayyear % 400) != 0 || !( ( $todayyear % 4 ) == 0 && ( $todayyear % 100 ) != 0) ){
+					if( ($todayyear != 2012 &&($todayyear % 400) != 0) || !( ( $todayyear % 4 ) == 0 && ( $todayyear % 100 ) != 0) ){
 						//was the birthdate in a leap year?
 						if( ($useryear % 400) == 0 || ( ( $useryear % 4 ) == 0 && ( $useryear % 100 ) != 0) ){
 							//if we haven't leap year and birthdate was in leapyear we have to cut yday after february
@@ -161,7 +161,8 @@ class ModSWKbirthdayHelper
 						}
 					}else{ //We have a leap year
 						//Is the birthday not in a leap year?
-						if( ($useryear % 400) != 0 || !( ( $useryear % 4 ) == 0 && ( $useryear % 100 ) != 0) ){
+						if( ($useryear % 400) == 0 || ( $useryear % 4 == 0 && $useryear % 100 != 0) ){
+						}else{
 							//if we have leap year and birthday was not, need to increment birthdays after february
 							if($res[$k]['birthdate']->toFormat('%m') > 2){
 								$res[$k]['leapcorrection'] += 1;
@@ -187,6 +188,7 @@ class ModSWKbirthdayHelper
 				$user['link'] = CKunenaLink::GetProfileLink($user['userid']);
 				break;
 			case 'forum':
+				echo $user['leapcorrection'] .'=='. $this->timeo->toFormat('%j') .'<br>';
 				if ($user['leapcorrection'] == $this->timeo->toFormat('%j')) {
 					$db		= JFactory::getDBO();
 					$subject = $db->getEscaped( self::getSubject($username) );
