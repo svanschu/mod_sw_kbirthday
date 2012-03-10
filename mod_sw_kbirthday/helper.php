@@ -188,7 +188,6 @@ class ModSWKbirthdayHelper
 				$user['link'] = CKunenaLink::GetProfileLink($user['userid']);
 				break;
 			case 'forum':
-				echo $user['leapcorrection'] .'=='. $this->timeo->toFormat('%j') .'<br>';
 				if ($user['leapcorrection'] == $this->timeo->toFormat('%j')) {
 					$db		= JFactory::getDBO();
 					$subject = $db->getEscaped( self::getSubject($username) );
