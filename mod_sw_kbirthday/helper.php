@@ -62,7 +62,7 @@ class ModSWKbirthdayHelper
 				break;
 			case 'user':
 				$user	=& JFactory::getUser();
-				if(!$user->guest) $this->timezone = $user->getParam('timezone');
+				if(!$user->guest) $this->timezone = $user->getParam('timezone', 0);
 				break;
 		}
 		$this->timezone = new DateTimeZone(self::$offsets[(string) $this->timezone]);
@@ -163,6 +163,21 @@ class ModSWKbirthdayHelper
 					unset($res[$k]);
 				}else{
 					$res[$k]['birthdate'] = new DateTime($v['year'].'-'.$v['month'].'-'.$v['day'], $this->timezone);
+					$res[$k]['correction'] = 0;
+					//both are leapyears or both are not
+					if ( $this->time_now->format('L') == $res[$k]['birthdate']->format('L') ) {
+						$res[$k]['correction'] = 0;
+					} //now leap year and birthday not
+					elseif ( $this->time_now->format('L') == 1  && $res[$k]['birthdate']->format('L') == 0 &&
+								$res[$k]['birthdate']->format('m') > 2 ) {
+						//this value have to added to the birthdate!
+						$res[$k]['correction'] = 1;
+					} //now non leap year but birthday leap year
+					elseif ( $this->time_now->format('L') == 0  && $res[$k]['birthdate']->format('L') == 1 &&
+								$res[$k]['birthdate']->format('m') > 2 ) {
+						//this value have to added to the birthdate!
+						$res[$k]['correction'] = -1;
+					}
 				}
 			}
 		}
@@ -182,8 +197,7 @@ class ModSWKbirthdayHelper
 				$user['link'] = CKunenaLink::GetProfileLink($user['userid']);
 				break;
 			case 'forum':
-				//if ($user['leapcorrection'] == $this->time_now->format('z')) {
-				if ($user['birthdate']->format('z') == $this->time_now->format('z')) {
+				if ( ($user['birthdate']->format('z') + $user['correction']) == $this->time_now->format('z')) {
 					$db		= JFactory::getDBO();
 					$subject = $db->getEscaped( self::getSubject($username) );
 					$query	= "SELECT id,catid,subject,time as year FROM #__kunena_messages WHERE subject='{$subject}'";
@@ -191,7 +205,7 @@ class ModSWKbirthdayHelper
 					$post	= $db->loadAssoc();
 					if($db->getErrorMsg()) KunenaError::checkDatabaseError();
 					$catid		= $this->params->get('bcatid');
-					$postyear = new JDate($post['year']);
+					$postyear = new DateTime($post['year'].'-00-00', $this->timezone);
 					if (empty($post) && !empty($catid) ||
 					!empty($post) && !empty($catid) && $postyear->format('o') < $this->time_now->format('o')) {
 						$botname	= $this->params->get('swkbbotname', JText::_('SW_KBIRTHDAY_FORUMPOST_BOTNAME_DEF'));
