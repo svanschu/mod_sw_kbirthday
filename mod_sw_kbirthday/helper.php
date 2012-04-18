@@ -21,6 +21,30 @@ require_once (JPATH_BASE . DS. 'components' . DS. 'com_kunena' . DS . 'lib' . DS
 
 class ModSWKbirthdayHelper
 {
+	private $app = NULL;
+
+	private $integration = NULL;
+
+	private static $offsets = array('-12' => 'Etc/GMT-12', '-11' => 'Pacific/Midway', '-10' => 'Pacific/Honolulu', '-9.5' => 'Pacific/Marquesas',
+			'-9' => 'US/Alaska', '-8' => 'US/Pacific', '-7' => 'US/Mountain', '-6' => 'US/Central', '-5' => 'US/Eastern', '-4.5' => 'America/Caracas',
+			'-4' => 'America/Barbados', '-3.5' => 'Canada/Newfoundland', '-3' => 'America/Buenos_Aires', '-2' => 'Atlantic/South_Georgia',
+			'-1' => 'Atlantic/Azores', '0' => 'Europe/London', '1' => 'Europe/Amsterdam', '2' => 'Europe/Istanbul', '3' => 'Asia/Riyadh',
+			'3.5' => 'Asia/Tehran', '4' => 'Asia/Muscat', '4.5' => 'Asia/Kabul', '5' => 'Asia/Karachi', '5.5' => 'Asia/Calcutta',
+			'5.75' => 'Asia/Katmandu', '6' => 'Asia/Dhaka', '6.5' => 'Indian/Cocos', '7' => 'Asia/Bangkok', '8' => 'Australia/Perth',
+			'8.75' => 'Australia/West', '9' => 'Asia/Tokyo', '9.5' => 'Australia/Adelaide', '10' => 'Australia/Brisbane',
+			'10.5' => 'Australia/Lord_Howe', '11' => 'Pacific/Kosrae', '11.5' => 'Pacific/Norfolk', '12' => 'Pacific/Auckland',
+			'12.75' => 'Pacific/Chatham', '13' => 'Pacific/Tongatapu', '14' => 'Pacific/Kiritimati');
+
+	private $params = NULL;
+
+	private $till_date = 0;
+
+	private $time_now = 0;
+
+	private $timezone = 0;
+
+	private $username = '';
+
 	/**
      * Constructor
 	 * @since 1.7.0
@@ -28,32 +52,28 @@ class ModSWKbirthdayHelper
 	 */
 	function __construct($params){
 		$this->app			= JFactory::getApplication();
-		$k_config		    = KunenaFactory::getConfig ();
-        $this->integration  = $k_config->integration_profile;
-        $this->username     = $k_config->username;
+        $this->integration  = KunenaFactory::getConfig ()->integration_profile;
+        $this->username     = KunenaFactory::getConfig ()->username;
 		$this->params		= $params;
-		//get the date today
-		$timefrom	= $params->get('timefrom');
-		$config	= JFactory::getConfig();
-		$soffset = $config->getValue('config.offset');
-		$this->timeo		= new JDate();
-		switch ($timefrom){
+		switch ($params->get('timefrom')){
 			case 'website':
-				$this->timeo	= new JDate( $this->timeo->toUnix(), -$soffset);
+				$config	= JFactory::getConfig();
+				$this->timezone = $config->getValue('config.offset');
 				break;
 			case 'user':
 				$user	=& JFactory::getUser();
-				if(!$user->guest){
-					$offset	= $user->getParam('timezone');
-					if(!empty($offset))
-						$this->timeo	= new JDate( $this->timeo->toUnix(), -$offset);
-					else
-						$this->timeo	= new JDate( $this->timeo->toUnix(), -$soffset);
-				}
+				if(!$user->guest) $this->timezone = $user->getParam('timezone');
 				break;
 		}
-		$this->btimeline = $params->get('nextxdays');
-		$this->datemaxo	= new JDate( ($this->timeo->toUnix() + ( $this->btimeline * 86400) ) );
+		$this->timezone = new DateTimeZone(self::$offsets[(string) $this->timezone]);
+		$this->time_now = new DateTime('now', $this->timezone);
+		$this->till_date = new DateTime('now', $this->timezone);
+		//Max timeframe
+		if (phpversion() < '5.3.0') {
+			$this->till_date->modify('+' . $params->get('nextxdays') . ' day');
+		} else {
+			$this->till_date->add(new DateInterval('P' . $params->get('nextxdays') . 'D'));
+		}
 	}
 
 	/**
@@ -63,8 +83,8 @@ class ModSWKbirthdayHelper
 	 */
 	private function getBirthdayUser()
 	{
-		$from			= $this->timeo->toFormat('%j');
-		$to				= $this->datemaxo->toFormat('%j');
+		$from			= $this->time_now->format('z');
+		$to				= $this->till_date->format('z');
 		if($this->integration == 'auto')
 			$this->integration	= KunenaIntegration::detectIntegration ( 'profile' , true );
         if($this->username == 0)
@@ -84,7 +104,7 @@ class ModSWKbirthdayHelper
 					INNER JOIN #__users AS b
 					ON a.user_id = b.id AND a.field_id = 3
 					WHERE ( DAYOFYEAR(a.value)>={$from} AND DAYOFYEAR(a.value)<=";
-			if($from>$to || $this->btimeline >= 365){
+			if($from>$to || $this->params->get('nextxdays') >= 365){
 				$query .= "366) OR ( DAYOFYEAR(a.value)>=0 AND DAYOFYEAR(a.value)<={$to})";
 			}else{
 				$query .= "{$to})";
@@ -104,7 +124,7 @@ class ModSWKbirthdayHelper
 						INNER JOIN #__users AS b
 						ON a.id = b.id
 						WHERE (DAYOFYEAR(a.{$cb})>={$from} AND DAYOFYEAR(a.{$cb})<=";
-			if($from>$to || $this->btimeline >= 365){
+			if($from>$to || $this->params->get('nextxdays') >= 365){
 				$query .= "366) OR (DAYOFYEAR(a.{$cb})>=0 AND DAYOFYEAR(a.{$cb})<={$to})";
 			}else{
 				$query .= "{$to})";
@@ -121,7 +141,7 @@ class ModSWKbirthdayHelper
 						INNER JOIN #__users AS b
 						ON a.userid = b.id
 						WHERE (DAYOFYEAR(a.birthdate)>={$from} AND DAYOFYEAR(a.birthdate)<=";
-			if($from>$to || $this->btimeline >= 365){
+			if($from>$to || $this->params->get('nextxdays') >= 365){
 				$query .= "366) OR (DAYOFYEAR(a.birthdate)>=0 AND DAYOFYEAR(a.birthdate)<={$to})";
 			}else{
 				$query .= "{$to})";
@@ -137,38 +157,12 @@ class ModSWKbirthdayHelper
 		}
 		if(!empty($res)){
 			//setting up the right birthdate
-			$todayyear	= $this->timeo->toFormat('%Y');
+			//$todayyear	= $this->time_now->format('o');
 			foreach ($res as $k=>$v){
 				if($v['year'] == 1 || empty($v['year'])){
 					unset($res[$k]);
 				}else{
-					$res[$k]['birthdate'] = new JDate( mktime(0,0,0,$v['month'],$v['day'],$v['year']) );
-					$res[$k]['leapcorrection'] = $res[$k]['birthdate']->toFormat('%j');
-					$useryear = $res[$k]['birthdate']->toFormat('%Y');			
-					//we have NOT a leap year?
-					if( ($todayyear != 2012 &&($todayyear % 400) != 0) || !( ( $todayyear % 4 ) == 0 && ( $todayyear % 100 ) != 0) ){
-						//was the birthdate in a leap year?
-						if( ($useryear % 400) == 0 || ( ( $useryear % 4 ) == 0 && ( $useryear % 100 ) != 0) ){
-							//if we haven't leap year and birthdate was in leapyear we have to cut yday after february
-							if($res[$k]['birthdate']->toFormat('%m') > 2){
-								$res[$k]['leapcorrection'] -= 1;
-								if( $this->timeo->toFormat('%j') > $res[$k]['leapcorrection'] ) unset($res[$k]);
-							}
-							//was birthday on 29 february? then show it on 1 march
-							if($v['month'] == 2 && $v['day'] == 29){
-								$res[$k]['birthdate'] = new JDate( ($res[$k]['birthdate']->toUnix() + 86400) );
-							}
-						}
-					}else{ //We have a leap year
-						//Is the birthday not in a leap year?
-						if( ($useryear % 400) == 0 || ( $useryear % 4 == 0 && $useryear % 100 != 0) ){
-						}else{
-							//if we have leap year and birthday was not, need to increment birthdays after february
-							if($res[$k]['birthdate']->toFormat('%m') > 2){
-								$res[$k]['leapcorrection'] += 1;
-							}
-						}
-					}
+					$res[$k]['birthdate'] = new DateTime($v['year'].'-'.$v['month'].'-'.$v['day'], $this->timezone);
 				}
 			}
 		}
@@ -188,7 +182,8 @@ class ModSWKbirthdayHelper
 				$user['link'] = CKunenaLink::GetProfileLink($user['userid']);
 				break;
 			case 'forum':
-				if ($user['leapcorrection'] == $this->timeo->toFormat('%j')) {
+				//if ($user['leapcorrection'] == $this->time_now->format('z')) {
+				if ($user['birthdate']->format('z') == $this->time_now->format('z')) {
 					$db		= JFactory::getDBO();
 					$subject = $db->getEscaped( self::getSubject($username) );
 					$query	= "SELECT id,catid,subject,time as year FROM #__kunena_messages WHERE subject='{$subject}'";
@@ -198,7 +193,7 @@ class ModSWKbirthdayHelper
 					$catid		= $this->params->get('bcatid');
 					$postyear = new JDate($post['year']);
 					if (empty($post) && !empty($catid) ||
-					!empty($post) && !empty($catid) && $postyear->toFormat('%Y') < $this->timeo->toFormat('%Y')) {
+					!empty($post) && !empty($catid) && $postyear->format('o') < $this->time_now->format('o')) {
 						$botname	= $this->params->get('swkbbotname', JText::_('SW_KBIRTHDAY_FORUMPOST_BOTNAME_DEF'));
 						$botid		= $this->params->get('swkbotid');
 						$time		= CKunenaTimeformat::internalTime ();
@@ -320,7 +315,7 @@ class ModSWKbirthdayHelper
 	 * @since 1.7.0
 	 */
 	private function addDate(& $user){
-			$bdate	= $user['birthdate']->toFormat($this->params->get('dateform'));
+			$bdate	= $user['birthdate']->format($this->params->get('dateform'));
 			$user['date'] = JText::sprintf('SW_KBIRTHDAY_DATE', $bdate);
 	}
 

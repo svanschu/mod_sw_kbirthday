@@ -47,7 +47,7 @@
 			<option value="0">No</option>
 			<option value="1">Yes</option>
 		</param>
-		<param type="text" name="dateform" default="%d.%m.%G" label="SW_KBIRTHDAY_DATEFORMAT"
+		<param type="text" name="dateform" default="d.m.o" label="SW_KBIRTHDAY_DATEFORMAT"
 			description="SW_KBIRTHDAY_DATEFORMAT_DESC" />
 		<param name="connection" type="list"
 			description="SW_KBIRTHDAY_CONNECTION_DESC"
