@@ -99,7 +99,7 @@ class ModSWKbirthdayHelper
 						    INTERVAL(YEAR(CURDATE()) - YEAR(a.value) + (RIGHT(CURDATE(),5)>RIGHT(DATE(a.value),5)))
 						    YEAR, CURDATE()) AS till";
             if ($this->params->get('displayage'))
-                $query .= ",(YEAR(CURDATE()) - YEAR(a.value) + (DAYOFYEAR(CURDATE())>DAYOFYEAR(a.value))) AS age";
+                $query .= ",(YEAR(CURDATE()) - YEAR(a.value) + (RIGHT(CURDATE(),5)>RIGHT(DATE(a.value),5))) AS age";
 			$query .= " FROM #__community_fields_values AS a
 					INNER JOIN #__users AS b
 					ON a.user_id = b.id AND a.field_id = 3
@@ -119,7 +119,7 @@ class ModSWKbirthdayHelper
 						    INTERVAL(YEAR(CURDATE()) - YEAR(a.{$cb}) + (RIGHT(CURDATE(),5)>RIGHT(a.{$cb},5)))
 						    YEAR, CURDATE()) AS till";
             if ($this->params->get('displayage'))
-                $query .= ",(YEAR(CURDATE()) - YEAR(a.{$cb}) + (DAYOFYEAR(CURDATE())>DAYOFYEAR(a.{$cb}))) AS age";
+                $query .= ",(YEAR(CURDATE()) - YEAR(a.{$cb}) + (RIGHT(CURDATE(),5)>RIGHT(DATE(a.{$cb}),5))) AS age";
             $query .= "	FROM #__comprofiler AS a
 						INNER JOIN #__users AS b
 						ON a.id = b.id
@@ -136,7 +136,7 @@ class ModSWKbirthdayHelper
 						    INTERVAL(YEAR(CURDATE()) - YEAR(a.birthdate) + (RIGHT(CURDATE(),5)>RIGHT(a.birthdate,5)))
 						    YEAR, CURDATE()) AS till";
             if ($this->params->get('displayage'))
-                $query .= ",(YEAR(CURDATE()) - YEAR(a.birthdate) + (DAYOFYEAR(CURDATE())>DAYOFYEAR(a.birthdate))) AS age";
+                $query .= ",(YEAR(CURDATE()) - YEAR(a.birthdate) + (RIGHT(CURDATE(),5)>RIGHT(DATE(a.birthdate),5))) AS age";
             $query.= " FROM #__kunena_users AS a
 						INNER JOIN #__users AS b
 						ON a.userid = b.id
